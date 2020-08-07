@@ -1,0 +1,11 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+      "browser": true
+  },
+  "parserOptions": {
+      "sourceType": "module"
+  },
+  "extends": ["airbnb", "airbnb/hooks", "plugin:prettier/recommended", "prettier/react"],
+  "plugins": ["react", "import"]
+}
