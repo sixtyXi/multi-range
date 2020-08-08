@@ -1,7 +1,11 @@
 import React from 'react';
 
+import Form from './Form/Form';
+
+import './App.less';
+
 const App = () => {
-  return <h1>Hello World!</h1>;
+  return <Form />;
 };
 
 export default App;

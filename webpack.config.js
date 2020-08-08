@@ -38,7 +38,7 @@ module.exports = (env) => {
     plugins: [
       new MiniCssExtractPlugin(),
       new HtmlWebpackPlugin({
-        title: 'Multi range input',
+        title: 'Multi-range input demo',
         template: 'src/index.html',
       }),
     ],

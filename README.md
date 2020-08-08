@@ -1,4 +1,4 @@
-# Multi range input example
+# Multi-range input demo
 
 ## How to use
 
@@ -14,7 +14,7 @@ npm ci
 npm start
 ```
 
-### 3. Go to [http://localhost:8080/](http://localhost:8080/)
+### 3. Go to [http://localhost:8080](http://localhost:8080)
 
 ## Production
 

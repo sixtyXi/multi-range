@@ -1,5 +1,5 @@
 {
-  "name": "multi-range",
+  "name": "multi-range-input-demo",
   "version": "0.1.0",
   "description": "Multi range input example",
   "main": "src/index.js",
@@ -44,6 +44,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }

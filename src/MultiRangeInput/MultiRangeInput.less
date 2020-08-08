@@ -1,0 +1,89 @@
+.range-wrap {
+  --thumb-shift: calc(var(--thumb-diameter) / 100);
+  --min-thumb-center: calc(
+    var(--min) * 1% + (50 - var(--min)) * var(--thumb-shift)
+  );
+  --max-thumb-center: calc(
+    var(--max) * 1% + (50 - var(--max)) * var(--thumb-shift)
+  );
+  --track-half-height: calc(var(--track-height) / 2);
+  --range-fill-half-height: calc(var(--range-fill-height) / 2);
+}
+
+.range-wrap {
+  display: grid;
+
+  &:focus {
+    outline: none;
+  }
+
+  background-image: linear-gradient(
+      to top,
+      var(--range-background-color),
+      var(--range-background-color) calc(50% - var(--range-fill-half-height)),
+      transparent calc(50% - var(--range-fill-half-height)),
+      transparent calc(50% + var(--range-fill-half-height)),
+      var(--range-background-color) calc(50% + var(--range-fill-half-height))
+    ),
+    linear-gradient(
+      to right,
+      transparent,
+      transparent var(--min-thumb-center),
+      var(--range-fill-color) var(--min-thumb-center),
+      var(--range-fill-color) var(--max-thumb-center),
+      transparent var(--max-thumb-center)
+    ),
+    linear-gradient(
+      to top,
+      transparent,
+      transparent calc(50% - var(--track-half-height)),
+      var(--track-color) calc(50% - var(--track-half-height)),
+      var(--track-color) calc(50% + var(--track-half-height)),
+      transparent calc(50% + var(--track-half-height))
+    );
+}
+
+.range {
+  grid-row: 1;
+  grid-column: 1;
+  z-index: 1;
+  width: var(--range-width);
+  margin: 0;
+  background: none;
+  pointer-events: none;
+
+  &:focus {
+    outline: none;
+    z-index: 2;
+  }
+
+  &::-webkit-slider-runnable-track,
+  &::-webkit-slider-thumb,
+  & {
+    -webkit-appearance: none;
+  }
+
+  &::-webkit-slider-thumb {
+    .thumb-mixin();
+  }
+
+  &::-moz-range-thumb {
+    .thumb-mixin();
+  }
+}
+
+.thumb-mixin {
+  width: var(--thumb-diameter);
+  height: var(--thumb-diameter);
+  background: var(--thumb-color);
+  border: var(--thumb-border-width) solid var(--thumb-border-color);
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 500ms;
+
+  .range:focus& {
+    border-width: calc(var(--thumb-border-width) * 1.5);
+    transform: scale(1.1);
+  }
+}
