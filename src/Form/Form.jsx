@@ -1,41 +1,62 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import './Form.less';
 import MultiRange from '../MultiRangeInput/MultiRangeInput';
+import sendRange from './service';
 
-const Form = () => {
-  const [min, setMin] = useState(1);
-  const [max, setMax] = useState(100);
+const Form = ({ min, max }) => {
+  const [minValue, setMinValue] = useState(min);
+  const [maxValue, setMaxValue] = useState(max);
+  const [isSending, setIsSending] = useState(false);
+  const [requestMessage, setRequestMessage] = useState('');
 
   const handleChangeMin = (value) => {
-    setMin(value);
+    setMinValue(value);
   };
 
   const handleChangeMax = (value) => {
-    setMax(value);
+    setMaxValue(value);
   };
 
-  const handleInputMin = ({ target: { value } }) => {
-    const minValue = Number(value);
-    if (minValue > 0 && minValue <= max) {
-      handleChangeMin(minValue);
-    }
-  };
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleInputMax = ({ target: { value } }) => {
-    const maxValue = Number(value);
-    if (maxValue > 0 && maxValue >= min) {
-      handleChangeMax(maxValue);
+    setIsSending(true);
+    setRequestMessage('Sending...');
+    try {
+      const response = await sendRange(minValue, maxValue);
+      setRequestMessage(response.statusText);
+    } catch (error) {
+      setRequestMessage(error.message);
+    } finally {
+      setIsSending(false);
     }
   };
 
   return (
-    <form>
-      <input type="number" value={min} onInput={handleInputMin} />
-      <input type="number" value={max} onInput={handleInputMax} />
-      <MultiRange onChangeMin={handleChangeMin} onChangeMax={handleChangeMax} />
-    </form>
+    <>
+      <form className="range-form" onSubmit={handleFormSubmit}>
+        <input type="number" value={minValue} disabled />
+        <input type="number" value={maxValue} disabled />
+        <MultiRange
+          onChangeMin={handleChangeMin}
+          onChangeMax={handleChangeMax}
+          min={min}
+          max={max}
+        />
+        <button type="submit" disabled={isSending}>
+          Send range
+        </button>
+      </form>
+      {requestMessage && <p className="message">{requestMessage}</p>}
+    </>
   );
+};
+
+Form.propTypes = {
+  min: PropTypes.number.isRequired,
+  max: PropTypes.number.isRequired,
 };
 
 export default Form;

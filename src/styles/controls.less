@@ -1,0 +1,25 @@
+input[type='number'] {
+  width: 100%;
+  padding: 12px 4px;
+  border-radius: 6px;
+  font-size: inherit;
+
+  @media only screen and (min-width: 405px) {
+    max-width: 200px;
+    & + & {
+      margin-left: 5px;
+    }
+  }
+}
+
+button {
+  display: block;
+  padding: 4px;
+  border-radius: 6px;
+  font-size: inherit;
+  cursor: pointer;
+
+  &:active {
+    transform: translateY(2px);
+  }
+}

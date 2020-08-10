@@ -6,6 +6,7 @@ module.exports = (env) => {
 
   const config = {
     mode: isDevelopment ? 'development' : 'production',
+    devtool: isDevelopment ? 'eval-cheap-module-source-map' : 'none',
     resolve: {
       extensions: ['.js', '.jsx'],
     },
@@ -29,7 +30,16 @@ module.exports = (env) => {
           use: {
             loader: 'babel-loader',
             options: {
-              presets: ['@babel/preset-env', '@babel/preset-react'],
+              presets: [
+                [
+                  '@babel/preset-env',
+                  {
+                    shippedProposals: true,
+                    targets: 'defaults, not IE 11',
+                  },
+                ],
+                '@babel/preset-react',
+              ],
             },
           },
         },
