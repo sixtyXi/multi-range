@@ -1,85 +1,115 @@
-import React, { createRef, useEffect, useState } from 'react';
+import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 
 import config from './config';
+import { getInRangePercentage, calcThumbOffsetFromCenter } from './helpers';
 import './MultiRangeInput.less';
 
-const percentage = (given, total) => (given * 100) / total;
+class MultiRangeInput extends React.PureComponent {
+  firstRangeRef = createRef();
 
-const MultiRange = ({ onChangeMin, onChangeMax, initialMin, initialMax }) => {
-  const [minPercent, setMinPercent] = useState(1);
-  const [maxPercent, setMaxPercent] = useState(100);
-  const firstRangeRef = createRef();
-  const secondRangeRef = createRef();
+  secondRangeRef = createRef();
 
-  useEffect(() => {
-    firstRangeRef.current.value = initialMin;
-    secondRangeRef.current.value = initialMax;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialMin, initialMax]);
+  constructor(props) {
+    super(props);
+    const { minValue, maxValue, min, max } = this.props;
+    this.state = {
+      minValue: minValue ?? min,
+      maxValue: maxValue ?? max,
+    };
+  }
 
-  const applyMinChange = (value) => {
-    const valuePercent = percentage(value, initialMax);
-    setMinPercent(valuePercent);
-    onChangeMin(value);
-  };
+  componentDidUpdate() {
+    const { min, max } = this.props;
+    const { minValue, maxValue } = this.state;
 
-  const applyMaxChange = (value) => {
-    const valuePercent = percentage(value, initialMax);
-    setMaxPercent(valuePercent);
-    onChangeMax(value);
-  };
-
-  const handleInputRange = () => {
-    const firstValue = Number(firstRangeRef.current.value);
-    const secondValue = Number(secondRangeRef.current.value);
-
-    if (firstValue > secondValue) {
-      applyMaxChange(firstValue);
-      applyMinChange(secondValue);
-    } else {
-      applyMinChange(firstValue);
-      applyMaxChange(secondValue);
+    if (min > minValue) {
+      this.firstRangeRef.current.value = min;
+      this.secondRangeRef.current.value = maxValue;
+      this.handleInputRange();
     }
+
+    if (max < maxValue) {
+      this.firstRangeRef.current.value = max;
+      this.secondRangeRef.current.value = minValue;
+      this.handleInputRange();
+    }
+  }
+
+  handleInputRange = () => {
+    const { onChangeMin, onChangeMax } = this.props;
+    const firstValue = Number(this.firstRangeRef.current.value);
+    const secondValue = Number(this.secondRangeRef.current.value);
+
+    const minValue = Math.min(firstValue, secondValue);
+    const maxValue = Math.max(firstValue, secondValue);
+
+    this.setState({ minValue, maxValue });
+
+    onChangeMin(minValue);
+    onChangeMax(maxValue);
   };
 
-  return (
-    <div
-      className="range-wrap"
-      style={{ ...config, '--min': minPercent, '--max': maxPercent }}
-    >
-      <input
-        className="range"
-        type="range"
-        min={initialMin}
-        max={initialMax}
-        onInput={handleInputRange}
-        ref={firstRangeRef}
-      />
-      <input
-        className="range"
-        type="range"
-        min={initialMin}
-        max={initialMax}
-        onInput={handleInputRange}
-        ref={secondRangeRef}
-      />
-    </div>
-  );
-};
+  render() {
+    const { min, max } = this.props;
+    const { minValue, maxValue } = this.state;
 
-MultiRange.defaultProps = {
+    const minValuePercentage = getInRangePercentage(minValue, min, max);
+    const maxValuePercentage = getInRangePercentage(maxValue, min, max);
+
+    const minThumbOffset = calcThumbOffsetFromCenter(minValue, min, max);
+    const maxThumbOffset = calcThumbOffsetFromCenter(maxValue, min, max);
+
+    return (
+      <div
+        className="range-wrap"
+        style={{
+          ...config,
+          '--min': minValuePercentage,
+          '--max': maxValuePercentage,
+          '--min-thumb-offset': minThumbOffset,
+          '--max-thumb-offset': maxThumbOffset,
+        }}
+      >
+        <input
+          className="range"
+          type="range"
+          min={min}
+          max={max}
+          defaultValue={minValue}
+          onInput={this.handleInputRange}
+          ref={this.firstRangeRef}
+        />
+        <input
+          className="range"
+          type="range"
+          min={min}
+          max={max}
+          defaultValue={maxValue}
+          onInput={this.handleInputRange}
+          ref={this.secondRangeRef}
+        />
+      </div>
+    );
+  }
+}
+
+MultiRangeInput.defaultProps = {
   onChangeMin: () => {},
   onChangeMax: () => {},
-  initialMin: 1,
-  initialMax: 100,
+  min: 1,
+  max: 100,
+  minValue: undefined,
+  maxValue: undefined,
 };
 
-MultiRange.propTypes = {
+MultiRangeInput.propTypes = {
   onChangeMin: PropTypes.func,
   onChangeMax: PropTypes.func,
-  initialMin: PropTypes.number,
-  initialMax: PropTypes.number,
+  min: PropTypes.number,
+  max: PropTypes.number,
+  minValue: PropTypes.number,
+  maxValue: PropTypes.number,
 };
 
-export default MultiRange;
+export default MultiRangeInput;
