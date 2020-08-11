@@ -26,7 +26,7 @@ const Form = ({ min, max }) => {
     setRequestMessage('Sending...');
     try {
       const response = await sendRange(minValue, maxValue);
-      setRequestMessage(response.statusText);
+      setRequestMessage(response);
     } catch (error) {
       setRequestMessage(error.message);
     } finally {

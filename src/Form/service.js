@@ -5,12 +5,13 @@ const getRange = async (min, max) => {
   url.search = new URLSearchParams({ min, max });
 
   const response = await fetch(url);
+  const message = response.statusText || `Status: ${response.status}`;
 
   if (!response.ok) {
-    throw new Error(response.statusText);
+    throw new Error(message);
   }
 
-  return response;
+  return message;
 };
 
 export default getRange;
